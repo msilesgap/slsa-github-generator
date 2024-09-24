@@ -34,38 +34,38 @@ inputs:
 runs:
   using: "composite"
   steps:
-    # Note: this assumes to top-level re-usable workflow
-    # has checkout'ed the builder repository using
-    # `.github/actions/secure-builder-checkout`.
-    - name: Checkout the repository with user ref
-      uses: ./__BUILDER_CHECKOUT_DIR__/.github/actions/secure-project-checkout
-      with:
-        token: ${{ inputs.token }}
-        path: ${{ inputs.path }}
+  # Note: this assumes to top-level re-usable workflow
+  # has checkout'ed the builder repository using
+  # `.github/actions/secure-builder-checkout`.
+  - name: Checkout the repository with user ref
+    uses: ./__BUILDER_CHECKOUT_DIR__/.github/actions/secure-project-checkout
+    with:
+      token: ${{ inputs.token }}
+      path: ${{ inputs.path }}
 
-    - name: Validate Go version.
-      id: validate
-      shell: bash
-      env:
-        GO_VERSION: ${{ inputs.go-version }}
-        GO_VERSION_FILE: ${{ inputs.go-version-file }}
-        INPUT_PATH: ${{ inputs.path }}
-      run: |
-        set -euo pipefail
-        if [ "${GO_VERSION}" == "" ] && [ "${GO_VERSION_FILE}" == "" ]; then
-            echo "::error::One of go-version or go-version-file should be specified."
-            exit 1
-        fi
-        if [ "${GO_VERSION}" != "" ]; then
-          echo "go_version=${GO_VERSION}" >> "$GITHUB_OUTPUT"
-        fi
-        if [ "${GO_VERSION_FILE}" != "" ]; then
-          # NOTE: We use realpath to remove the trailing '/' if present.
-          echo "go_version_file=${INPUT_PATH%%/}/${GO_VERSION_FILE}" >> "$GITHUB_OUTPUT"
-        fi
+  - name: Validate Go version.
+    id: validate
+    shell: bash
+    env:
+      GO_VERSION: ${{ inputs.go-version }}
+      GO_VERSION_FILE: ${{ inputs.go-version-file }}
+      INPUT_PATH: ${{ inputs.path }}
+    run: |
+      set -euo pipefail
+      if [ "${GO_VERSION}" == "" ] && [ "${GO_VERSION_FILE}" == "" ]; then
+          echo "::error::One of go-version or go-version-file should be specified."
+          exit 1
+      fi
+      if [ "${GO_VERSION}" != "" ]; then
+        echo "go_version=${GO_VERSION}" >> "$GITHUB_OUTPUT"
+      fi
+      if [ "${GO_VERSION_FILE}" != "" ]; then
+        # NOTE: We use realpath to remove the trailing '/' if present.
+        echo "go_version_file=${INPUT_PATH%%/}/${GO_VERSION_FILE}" >> "$GITHUB_OUTPUT"
+      fi
 
-    - name: Set up Go environment
-      uses: actions/setup-go@93397bea11091df50f3d7e59dc26a7711a8bcfbe # v4.1.0
-      with:
-        go-version: ${{ steps.validate.outputs.go_version }}
-        go-version-file: ${{ steps.validate.outputs.go_version_file }}
+  - name: Set up Go environment
+    uses: actions/setup-go@df1a11710ed378b187f40c71eb3d6c08d82e7108 # v5.0.2
+    with:
+      go-version: ${{ steps.validate.outputs.go_version }}
+      go-version-file: ${{ steps.validate.outputs.go_version_file }}

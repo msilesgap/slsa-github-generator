@@ -203,7 +203,7 @@ jobs:
           name: artifact2
 
       - name: Upload assets
-        uses: softprops/action-gh-release@1e07f4398721186383de40550babbdf2b84acfc5 # v0.1.14
+        uses: softprops/action-gh-release@c7857c88c0b69847af67785971a0b5633c6d22cf #v2.0.8
         with:
           files: |
             artifact1
